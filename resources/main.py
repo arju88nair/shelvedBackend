@@ -1,14 +1,12 @@
-from flask import Response, request
-from database.model import Comment, User, Post
-from flask_restful import Resource
-from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
-from resources.errors import SchemaValidationError, InternalServerError, UpdatingItemError, DeletingItemError, \
-    ItemNotExistsError, ItemAlreadyExistsError, UpdatingItemError
-from datetime import datetime
-from flask_jwt_extended import jwt_required, get_jwt_identity
-import json
 from bson import ObjectId
 from bson.json_util import dumps
+from flask import Response
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restful import Resource
+from mongoengine.errors import DoesNotExist
+
+from database.model import Post
+from resources.errors import InternalServerError, ItemNotExistsError
 
 
 class ByCategoryApi(Resource):
@@ -17,7 +15,7 @@ class ByCategoryApi(Resource):
 
     @jwt_required
     def get(self, id):
-        """[Retrieves all Posts under a category]
+        """[Retrieves all Posts under a board]
         
         Raises:
             InternalServerError: [If Eror in retrieval]
@@ -29,13 +27,13 @@ class ByCategoryApi(Resource):
             user_id = get_jwt_identity()
             posts = Post.objects.aggregate(
                 {"$lookup": {
-                    "from": "category",
+                    "from": "board",
                     "foreignField": "_id",
-                    "localField": "category",
-                    "as": "category",
+                    "localField": "board",
+                    "as": "board",
                 }},
                 {"$unwind": "$category"},
-                {"$match": {"category._id": ObjectId(id)}},
+                {"$match": {"board._id": ObjectId(id)}},
                 {
                     "$addFields": {
                         "liked": {

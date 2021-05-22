@@ -1,7 +1,10 @@
 # import spacy
 from collections import Counter
 from string import punctuation
-# nlp = spacy.load("en_core_web_sm")
+
+import spacy as spacy
+
+nlp = spacy.load("en_core_web_sm")
 
 
 def summarize(text, limit):

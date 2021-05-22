@@ -6,9 +6,9 @@ from flask_restful import Api
 from resources.errors import errors
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-from resources.routes import initialize_routes
-from database.model import RevokedTokenModel
-from flask_cors import CORS, cross_origin
+from util.routes import initialize_routes
+from flask_cors import CORS
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -41,4 +41,3 @@ if __name__ == "__main__":
     app.run(debug=True)
     app.run(host='0.0.0.0')
     app.run(port=5000)
-

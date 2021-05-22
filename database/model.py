@@ -5,7 +5,7 @@ from mongoengine.errors import FieldDoesNotExist, DoesNotExist
 from resources.errors import TokenNotFound, InternalServerError
 
 
-class Category(db.Document):
+class Board(db.Document):
     title = db.StringField(required=True)
     symbol = db.StringField()
     description = db.StringField(default="")
@@ -18,7 +18,7 @@ class Category(db.Document):
         if not self.created_date:
             self.created_date = datetime.datetime.now()
         self.modified_date = datetime.datetime.now()
-        return super(Category, self).save(*args, **kwargs)
+        return super(Board, self).save(*args, **kwargs)
 
 
 class Post(db.Document):
@@ -30,7 +30,7 @@ class Post(db.Document):
     text = db.StringField()
     slug = db.StringField()
     type = db.StringField()
-    category = db.ReferenceField('Category', required=True)
+    board = db.ReferenceField('Board', required=True)
     keywords = db.ListField()
     tags = db.ListField()
     added_by = db.ReferenceField('User')
@@ -54,7 +54,7 @@ class User(db.Document):
     verified = db.BooleanField(default=False)
     is_active = db.BooleanField(default=True)
     posts = db.ListField(db.ReferenceField('Post', reverse_delete_rule=db.PULL))
-    category = db.ListField(db.ReferenceField('Category', reverse_delete_rule=db.PULL))
+    board = db.ListField(db.ReferenceField('Board', reverse_delete_rule=db.PULL))
     created_date = db.DateTimeField()
     modified_date = db.DateTimeField(default=datetime.datetime.now)
 
@@ -72,7 +72,7 @@ class User(db.Document):
 
 
 User.register_delete_rule(Post, 'added_by', db.CASCADE)
-User.register_delete_rule(Category, 'added_by', db.PULL)
+User.register_delete_rule(Board, 'added_by', db.PULL)
 
 
 class RevokedTokenModel(db.Document):
@@ -97,7 +97,7 @@ class RevokedTokenModel(db.Document):
             return query.revoked
         except(DoesNotExist, FieldDoesNotExist):
             raise TokenNotFound
-        except Exception as e:
+        except Exception:
             raise InternalServerError
 
 
@@ -118,11 +118,12 @@ class Like(db.EmbeddedDocumentListField):
     created_date = db.DateTimeField(default=datetime.datetime.now)
     modified_date = db.DateTimeField(default=datetime.datetime.now)
 
+
 class AuthMethods(db.Document):
     name = db.StringField()
+
 
 class AuthProvider(db.Document):
     provider_key = db.StringField()
     added_by = db.ReferenceField('User')
     method_id = db.ReferenceField('AuthMethod')
-    

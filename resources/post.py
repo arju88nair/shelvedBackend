@@ -53,12 +53,12 @@ class PostsApi(Resource):
         body = request.get_json()
 
         # source validations
-        if 'source' not in body or 'source_url' not in body or 'category' not in body:
+        if 'source' not in body or 'source_url' not in body or 'board' not in body:
             raise SchemaValidationError
 
         source = body['source']
         source_url = body['source_url']
-        category = body['category']
+        board = body['board']
 
         if source is None or source == '':
             raise SchemaValidationError
@@ -66,7 +66,7 @@ class PostsApi(Resource):
         if source_url is None or source_url == '':
             raise SchemaValidationError
 
-        if category is None or category == '':
+        if board is None or board == '':
             raise SchemaValidationError
 
         if validateURL(source_url) is False and source is not None:
@@ -133,12 +133,12 @@ class PostApi(Resource):
         body = request.get_json()
 
         # source validations
-        if 'source' not in body or 'source_url' not in body or 'category' not in body:
+        if 'source' not in body or 'source_url' not in body or 'board' not in body:
             raise SchemaValidationError
 
         source = body['source']
         source_url = body['source_url']
-        category = body['category']
+        board = body['board']
 
         if source is None or source == '':
             raise SchemaValidationError
@@ -146,7 +146,7 @@ class PostApi(Resource):
         if source_url is None or source_url == '':
             raise SchemaValidationError
 
-        if category is None or category == '':
+        if board is None or board == '':
             raise SchemaValidationError
 
         try:
@@ -206,10 +206,10 @@ class PostApi(Resource):
             posts = Post.objects.aggregate(
                 {"$match": {"_id": ObjectId(id)}},
                 {"$lookup": {
-                    "from": "category",
+                    "from": "board",
                     "foreignField": "_id",
-                    "localField": "category",
-                    "as": "category",
+                    "localField": "board",
+                    "as": "board",
                 }},
                 {"$unwind": "$category"},
                 {

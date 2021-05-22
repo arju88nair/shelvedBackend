@@ -1,16 +1,17 @@
+import json
+
 from flask import Response, request
-from database.model import Category, User
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
+
+from database.model import Board, User
 from resources.errors import SchemaValidationError, UpdatingItemError, ItemAlreadyExistsError, InternalServerError, \
     DeletingItemError, ItemNotExistsError
-from newspaper import Article
-import json
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class CategoriesApi(Resource):
-    """[Batch Category actions]
+    """[Batch Board actions]
     """
 
     @jwt_required
@@ -24,21 +25,21 @@ class CategoriesApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
-            posts = Category.objects().to_json()
+            posts = Board.objects().to_json()
             data = {'data': json.loads(posts), 'message': "Successfully retrieved", "count": len(json.loads(posts))}
             data = json.dumps(data)
             response = Response(data, mimetype="application/json", status=200)
             return response
-        except Exception as e:
+        except Exception:
             raise InternalServerError
 
     @jwt_required
     def post(self):
-        """[Batch Category API]
+        """[Batch Board API]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the category data]
-            ItemAlreadyExistsError: [If the category already exist]
+            SchemaValidationError: [If there are validation error in the board data]
+            ItemAlreadyExistsError: [If the board already exist]
             InternalServerError: [Error in insertion]
         
         Returns:
@@ -53,10 +54,10 @@ class CategoriesApi(Resource):
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
-            category = Category(**body, added_by=user)
-            category.save()
-            id = category.id
-            data = json.dumps({'id': str(id), 'message': "Successfully inserted", 'category': json.loads(category.to_json())})
+            board = Board(**body, added_by=user)
+            board.save()
+            board_id = board.id
+            data = json.dumps({'id': str(board_id), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
             return Response(data, mimetype="application/json", status=200)
         except (FieldDoesNotExist, ValidationError):
             raise SchemaValidationError
@@ -68,7 +69,7 @@ class CategoriesApi(Resource):
 
 
 class CategoryApi(Resource):
-    """[Individual Category actions]
+    """[Individual Board actions]
     """
 
     @jwt_required
@@ -79,7 +80,7 @@ class CategoryApi(Resource):
             id {[Object ID]} -- [Mongo Object ID]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the category data]
+            SchemaValidationError: [If there are validation error in the board data]
             UpdatingItemError: [Error in update]
             InternalServerError: [Error in insertion]
         
@@ -88,9 +89,9 @@ class CategoryApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            category = Category.objects.get(id=id, added_by=user_id)
+            board = Board.objects.get(id=id, added_by=user_id)
             body = request.get_json()
-            Category.objects.get(id=id).update(**body)
+            Board.objects.get(id=id).update(**body)
             data = json.dumps({'message': "Successfully updated"})
             return Response(data, mimetype="application/json", status=200)
         except InvalidQueryError:
@@ -102,7 +103,7 @@ class CategoryApi(Resource):
 
     @jwt_required
     def delete(self, id):
-        """[Deleting single category]
+        """[Deleting single board]
         
         Arguments:
             id {[Object ID]} -- [Mongo Object ID]
@@ -116,8 +117,8 @@ class CategoryApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            category = Category.objects.get(id=id, added_by=user_id)
-            category.delete()
+            board = Board.objects.get(id=id, added_by=user_id)
+            board.delete()
             data = json.dumps({'message': "Successfully deleted"})
             return Response(data, mimetype="application/json", status=200)
         except DoesNotExist:
@@ -128,7 +129,7 @@ class CategoryApi(Resource):
 
     @jwt_required
     def get(self, id):
-        """[Get single category item]
+        """[Get single board item]
         
         Arguments:
             id {[Object ID]} -- [Mongo Object ID]
@@ -141,7 +142,7 @@ class CategoryApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
-            posts = Category.objects.get(id=id).to_json()
+            posts = Board.objects.get(id=id).to_json()
             data = json.dumps(
                 {'data': json.loads(posts), 'message': "Successfully retrieved", "count": len(json.loads(posts))})
             return Response(data, mimetype="application/json", status=200)
