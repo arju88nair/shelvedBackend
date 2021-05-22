@@ -9,7 +9,7 @@ from database.model import Post
 from resources.errors import InternalServerError, ItemNotExistsError
 
 
-class ByCategoryApi(Resource):
+class ByBoardApi(Resource):
     """[Batch Comment actions]
     """
 
@@ -32,7 +32,7 @@ class ByCategoryApi(Resource):
                     "localField": "board",
                     "as": "board",
                 }},
-                {"$unwind": "$category"},
+                {"$unwind": "$Board"},
                 {"$match": {"board._id": ObjectId(id)}},
                 {
                     "$addFields": {

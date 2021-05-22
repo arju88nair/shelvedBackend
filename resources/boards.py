@@ -10,13 +10,13 @@ from resources.errors import SchemaValidationError, UpdatingItemError, ItemAlrea
     DeletingItemError, ItemNotExistsError
 
 
-class CategoriesApi(Resource):
+class BoardsApi(Resource):
     """[Batch Board actions]
     """
 
     @jwt_required
     def get(self):
-        """[Retrieves all Categories]
+        """[Retrieves all Boards]
         
         Raises:
             InternalServerError: [If Eror in retrieval]
@@ -57,7 +57,7 @@ class CategoriesApi(Resource):
             board = Board(**body, added_by=user)
             board.save()
             board_id = board.id
-            data = json.dumps({'id': str(board_id), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
+            data = json.dumps({'id': str(id), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
             return Response(data, mimetype="application/json", status=200)
         except (FieldDoesNotExist, ValidationError):
             raise SchemaValidationError
@@ -68,7 +68,7 @@ class CategoriesApi(Resource):
             raise InternalServerError
 
 
-class CategoryApi(Resource):
+class BoardApi(Resource):
     """[Individual Board actions]
     """
 

@@ -33,7 +33,7 @@ class SignupApi(Resource):
             user.hash_password()
             user.save()
             userId = user.id
-            return tokenCreation(user, body, "Successfully Signed Up", userId)
+            return tokenCreation(user, body, "Successfully signed up", userId)
         except FieldDoesNotExist as e:
             print(e)
             raise SchemaValidationError
@@ -66,7 +66,7 @@ class LoginApi(Resource):
         try:
             body = request.get_json()
             user = User.objects.get(email=body.get('email'))
-            return tokenCreation(user, body, "Successfully Logged In", user.id)
+            return tokenCreation(user, body, "Successfully logged in", user.id)
         except UnauthorizedError:
             raise UnauthorizedError
         except  DoesNotExist:

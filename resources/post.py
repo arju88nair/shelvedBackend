@@ -211,7 +211,7 @@ class PostApi(Resource):
                     "localField": "board",
                     "as": "board",
                 }},
-                {"$unwind": "$category"},
+                {"$unwind": "$board"},
                 {
                     "$addFields": {
                         "liked": {

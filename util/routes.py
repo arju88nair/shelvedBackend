@@ -1,9 +1,9 @@
 from resources.post import PostsApi, PostApi
 from resources.comments import CommentsApi, CommentApi
 from resources.like import LikeApi, UnLikeApi
-from resources.boards import CategoriesApi, CategoryApi
+from resources.boards import BoardsApi, BoardApi
 from resources.user import SignupApi, LoginApi, TokenApi, LogoutApi, LogoutRefreshAPI
-from resources.main import ByCategoryApi
+from resources.main import ByBoardApi
 
 
 def initialize_routes(api):
@@ -16,8 +16,8 @@ def initialize_routes(api):
     api.add_resource(PostsApi, '/api/posts')
     api.add_resource(PostApi, '/api/post/<id>')
 
-    api.add_resource(CategoriesApi, '/api/categories')
-    api.add_resource(CategoryApi, '/api/board/<id>')
+    api.add_resource(BoardsApi, '/api/boards')
+    api.add_resource(BoardApi, '/api/board/<id>')
 
     api.add_resource(CommentsApi, '/api/comments')
     api.add_resource(CommentApi, '/api/comment/<id>')
@@ -25,4 +25,4 @@ def initialize_routes(api):
     api.add_resource(LikeApi, '/api/like')
     api.add_resource(UnLikeApi, '/api/unlike')
 
-    api.add_resource(ByCategoryApi, '/api/byCategory/<id>')
+    api.add_resource(ByBoardApi, '/api/by-board/<id>')
