@@ -4,3 +4,7 @@ itsdangerous==2.0.0
 Jinja2==3.0.0
 MarkupSafe==2.0.0
 Werkzeug==2.0.0
+
+mongoengine~=0.23.1
+python-dotenv~=0.17.1
+pymongo~=3.11.4

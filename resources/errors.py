@@ -44,6 +44,7 @@ class UnauthorizedError(HTTPException):
 class EmailDoesnotExistsError(HTTPException):
     pass
 
+
 class UserNameDoesnotExistsError(HTTPException):
     pass
 

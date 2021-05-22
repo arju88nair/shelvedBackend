@@ -2,7 +2,6 @@ from flask import Flask
 from database.db import initialize_db
 import flask.scaffold
 flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
-import flask_restful
 from flask_restful import Api
 from resources.errors import errors
 from flask_bcrypt import Bcrypt
@@ -28,7 +27,7 @@ app.config.from_pyfile('env.py')
 
 
 app.config['JWT_SECRET_KEY'] = app.config.get("JWT_SECRET_KEY")
-# app.config['MONGODB_SETTINGS'] = app.config.get("MONGODB_SETTINGS")
+app.config['MONGODB_SETTINGS'] = app.config.get("MONGODB_SETTINGS")
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['MONGODB_SETTINGS'] = {
@@ -39,7 +38,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 initialize_db(app)
 initialize_routes(api)
 if __name__ == "__main__":
+    app.run(debug=True)
     app.run(host='0.0.0.0')
-    app.debug = True
     app.run(port=5000)
 
