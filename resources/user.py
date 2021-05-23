@@ -1,6 +1,5 @@
 import datetime
 import json
-
 from flask import Response, request
 from flask import current_app as app
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, \
@@ -143,7 +142,7 @@ class LogoutRefreshAPI(Resource):
             return InternalServerError
 
 
-def  tokenCreation(user, body, message, userId):
+def tokenCreation(user, body, message, userId):
     authorized = user.check_password(body.get('password'))
     if not authorized:
         raise UnauthorizedError
