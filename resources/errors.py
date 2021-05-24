@@ -67,7 +67,7 @@ class ActionAlreadyDone(HTTPException):
 
 errors = {
     "InternalServerError": {
-        "message": "Something went wrong",
+        "message": "Something went wrongs",
         "status": 500
     },
     "SchemaValidationError": {
