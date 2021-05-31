@@ -18,7 +18,7 @@ class PostsApi(Resource):
     """[Batch Post actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def get(self):
         """[Retrieves all Posts]
         
@@ -38,7 +38,7 @@ class PostsApi(Resource):
         except Exception as e:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         """[Batch Post API]
         
@@ -115,7 +115,7 @@ class PostApi(Resource):
     """[Individual Post actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def put(self, id):
         """[Updating single]
         
@@ -162,7 +162,7 @@ class PostApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
         """[Deleting single post]
         
@@ -187,7 +187,7 @@ class PostApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def get(self, id):
         """[Get single post item]
         

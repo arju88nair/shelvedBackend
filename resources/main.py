@@ -13,7 +13,7 @@ class ByBoardApi(Resource):
     """[Batch Comment actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def get(self, id):
         """[Retrieves all Posts under a board]
         

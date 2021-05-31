@@ -18,7 +18,7 @@ class CommentsApi(Resource):
     """[Batch Comment actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def get(self):
         """[Retrieves all Comments]
         
@@ -38,7 +38,7 @@ class CommentsApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         """[Batch Comment API]
         
@@ -103,7 +103,7 @@ class CommentApi(Resource):
     """[Individual Comment actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def put(self, id):
         """[Updating single]
         
@@ -131,7 +131,7 @@ class CommentApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
         """[Deleting single comment]
         
@@ -157,7 +157,7 @@ class CommentApi(Resource):
             print(e)
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def get(self, id):
         """[Get single comment item]
         

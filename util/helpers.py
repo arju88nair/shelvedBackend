@@ -40,8 +40,8 @@ def add_token_to_database(encoded_token, identity_claim):
     Raises:
         SchemaValidationError
         PostAlreadyExistsError
-        InternalServerError
-        TokenNotFound
+        InternalServerErroridentity_claimidentity_claim
+        TokenNotFoundidentity_claim
         InternalServerError
     """
 

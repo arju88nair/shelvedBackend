@@ -14,7 +14,7 @@ class BoardsApi(Resource):
     """[Batch Board actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def get(self):
         """[Retrieves all Boards]
         
@@ -33,7 +33,7 @@ class BoardsApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         """[Batch Board API]
         
@@ -72,7 +72,7 @@ class BoardApi(Resource):
     """[Individual Board actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def put(self, id):
         """[Updating single]
         
@@ -101,7 +101,7 @@ class BoardApi(Resource):
         except Exception:
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
         """[Deleting single board]
         
@@ -127,7 +127,7 @@ class BoardApi(Resource):
             print(e)
             raise InternalServerError
 
-    @jwt_required
+    @jwt_required()
     def get(self, id):
         """[Get single board item]
         

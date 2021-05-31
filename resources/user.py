@@ -101,7 +101,7 @@ class TokenApi(Resource):
 
 
 class LogoutApi(Resource):
-    @jwt_required
+    @jwt_required()
     def delete(self):
         """[Logout and access token revoke]
         
@@ -151,7 +151,7 @@ def tokenCreation(user, body, message, userId):
     access_token = create_access_token(identity=str(user.id), expires_delta=accessTokenExpiry)
     refresh_token = create_refresh_token(identity=str(user.id), expires_delta=refreshTokenExpiry)
 
-    # Store the tokens in our store with a status of not currently revoked.
+    # # Store the tokens in our store with a status of not currently revoked.
     add_token_to_database(access_token, app.config['JWT_IDENTITY_CLAIM'])
     add_token_to_database(refresh_token, app.config['JWT_IDENTITY_CLAIM'])
     data = json.dumps(

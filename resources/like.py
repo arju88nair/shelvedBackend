@@ -11,7 +11,7 @@ class LikeApi(Resource):
     """[Like actions]
     """
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         """[Like API]
         
@@ -55,7 +55,7 @@ class UnLikeApi(Resource):
     """[UnLike action]
     """
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         """[Like API]
         

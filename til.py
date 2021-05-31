@@ -1,5 +1,4 @@
 import datetime
-
 from flask import Flask
 from database.db import initialize_db
 import flask.scaffold
@@ -23,7 +22,7 @@ def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(datetime.timezone.utc)
-        target_timestamp = datetime.timestamp(now + datetime.timedelta(minutes=30))
+        target_timestamp = datetime.    timestamp(now + datetime.timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
@@ -31,6 +30,7 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
+
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
