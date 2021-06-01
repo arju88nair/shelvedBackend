@@ -59,9 +59,11 @@ class BoardsApi(Resource):
             board_id = board.id
             data = json.dumps({'id': str(id), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
             return Response(data, mimetype="application/json", status=200)
-        except (FieldDoesNotExist, ValidationError):
+        except (FieldDoesNotExist, ValidationError) as e:
+            print(e)
             raise SchemaValidationError
-        except NotUniqueError:
+        except NotUniqueError as e:
+            print(e)
             raise ItemAlreadyExistsError
         except Exception as e:
             print(e)

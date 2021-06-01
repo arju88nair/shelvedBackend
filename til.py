@@ -13,6 +13,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 cors = CORS(app)
 
+# //TODO Fix security issues
 api = Api(app, errors=errors)
 
 # Using an `after_request` callback, we refresh any token that is within 30
@@ -21,8 +22,8 @@ api = Api(app, errors=errors)
 def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(datetime.timezone.utc)
-        target_timestamp = datetime.    timestamp(now + datetime.timedelta(minutes=30))
+        now = datetime.datetime.now(datetime.timezone.utc)
+        target_timestamp = datetime.datetime.timestamp(now + datetime.timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
@@ -36,8 +37,8 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 app.config.from_pyfile('env.py')
 
-app.config["JWT_COOKIE_SECURE"] = False
-app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+# app.config["JWT_COOKIE_SECURE"] = False
+# app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(hours=1)
 
 app.config['JWT_SECRET_KEY'] = app.config.get("JWT_SECRET_KEY")
