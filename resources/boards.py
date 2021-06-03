@@ -8,6 +8,7 @@ from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, 
 from database.model import Board, User
 from resources.errors import SchemaValidationError, UpdatingItemError, ItemAlreadyExistsError, InternalServerError, \
     DeletingItemError, ItemNotExistsError
+import timeago, datetime
 
 
 class BoardsApi(Resource):
@@ -25,12 +26,18 @@ class BoardsApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
-            posts = Board.objects().to_json()
-            data = {'data': json.loads(posts), 'message': "Successfully retrieved", "count": len(json.loads(posts))}
+
+            pipeline = [
+                {"$sort": {"name": -1}},
+            ]
+            boards = Board.objects().aggregate(pipeline)
+            print(len(boards))
+            data = {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))}
             data = json.dumps(data)
             response = Response(data, mimetype="application/json", status=200)
             return response
-        except Exception:
+        except Exception as e:
+            print(e)
             raise InternalServerError
 
     @jwt_required()
@@ -45,6 +52,13 @@ class BoardsApi(Resource):
         Returns:
             [json] -- [Json object with message and status code]
         """
+        now = datetime.datetime.now() + datetime.timedelta(seconds=60 * 3.4)
+        print(now)
+        date = datetime.datetime.now()
+        print(date)
+        data = timeago.format(date, now)
+        return Response(data, mimetype="application/json", status=200)
+
         body = request.get_json()
 
         # validations
@@ -144,9 +158,9 @@ class BoardApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
-            posts = Board.objects.get(id=id).to_json()
+            boards = Board.objects.get(id=id).to_json()
             data = json.dumps(
-                {'data': json.loads(posts), 'message': "Successfully retrieved", "count": len(json.loads(posts))})
+                {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))})
             return Response(data, mimetype="application/json", status=200)
         except DoesNotExist:
             raise ItemNotExistsError
