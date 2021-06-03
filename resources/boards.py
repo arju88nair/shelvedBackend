@@ -17,21 +17,18 @@ class BoardsApi(Resource):
 
     @jwt_required()
     def get(self):
-        """[Retrieves all Boards]
+        """[Retrieves all Boards by user]
         
         Raises:
-            InternalServerError: [If Eror in retrieval]
+            InternalServerError: [If Error in retrieval]
         
         Returns:
             [json] -- [Json object with message and status code]
         """
         try:
-
-            pipeline = [
-                {"$sort": {"name": -1}},
-            ]
-            boards = Board.objects().aggregate(pipeline)
-            print(len(boards))
+            user_id = get_jwt_identity()
+            print(user_id)
+            boards = Board.objects.get(added_by=user_id).to_json()
             data = {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))}
             data = json.dumps(data)
             response = Response(data, mimetype="application/json", status=200)
@@ -42,7 +39,7 @@ class BoardsApi(Resource):
 
     @jwt_required()
     def post(self):
-        """[Batch Board API]
+        """[Board API]
         
         Raises:
             SchemaValidationError: [If there are validation error in the board data]
