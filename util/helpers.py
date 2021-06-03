@@ -84,6 +84,12 @@ def revoke_token(token_id, user):
 
 
 def generateName():
+    """
+    Generate funny slug names
+    :return:
+    """
     secure_random = random.SystemRandom()
     name = secure_random.choice(slugGenWords) + '_' + secure_random.choice(right)
     return name
+
+
