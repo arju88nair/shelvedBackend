@@ -83,13 +83,3 @@ def revoke_token(token_id, user):
         raise InternalServerError
 
 
-def generateName():
-    """
-    Generate funny slug names
-    :return:
-    """
-    secure_random = random.SystemRandom()
-    name = secure_random.choice(slugGenWords) + '_' + secure_random.choice(right)
-    return name
-
-

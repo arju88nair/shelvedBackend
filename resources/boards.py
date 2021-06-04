@@ -9,6 +9,8 @@ from database.model import Board, User
 from resources.errors import SchemaValidationError, UpdatingItemError, ItemAlreadyExistsError, InternalServerError, \
     DeletingItemError, ItemNotExistsError
 import timeago, datetime
+from bson.objectid import ObjectId
+from bson.json_util import dumps
 
 
 class BoardsApi(Resource):
@@ -27,12 +29,19 @@ class BoardsApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            print(user_id)
-            boards = Board.objects.get(added_by=user_id).to_json()
-            data = {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))}
-            data = json.dumps(data)
-            response = Response(data, mimetype="application/json", status=200)
-            return response
+            now = datetime.datetime.now() + datetime.timedelta(seconds=60 * 3.4)
+            boards = Board.objects(added_by=ObjectId(user_id))
+            boards_list = []
+            for board in boards:
+                board_dict = board.to_mongo().to_dict()
+                data = timeago.format(board.created_at, now)
+                board_dict['time_stamp'] = data
+                boards_list.append(board_dict)
+            res = {'data': boards_list, 'message': "Successfully retrieved", "count": len(boards_list)}
+            boards_josn = dumps(res)
+            return Response(boards_josn, mimetype="application/json", status=200)
+
+
         except Exception as e:
             print(e)
             raise InternalServerError
@@ -48,16 +57,9 @@ class BoardsApi(Resource):
         
         Returns:
             [json] -- [Json object with message and status code]
-        """
-        now = datetime.datetime.now() + datetime.timedelta(seconds=60 * 3.4)
-        print(now)
-        date = datetime.datetime.now()
-        print(date)
-        data = timeago.format(date, now)
-        return Response(data, mimetype="application/json", status=200)
+        # """
 
         body = request.get_json()
-
         # validations
         if 'title' not in body:
             raise SchemaValidationError
@@ -67,8 +69,8 @@ class BoardsApi(Resource):
             user = User.objects.get(id=user_id)
             board = Board(**body, added_by=user)
             board.save()
-            board_id = board.id
-            data = json.dumps({'id': str(id), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
+            slug = board.slug
+            data = json.dumps({'id': str(slug), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
             return Response(data, mimetype="application/json", status=200)
         except (FieldDoesNotExist, ValidationError) as e:
             print(e)
@@ -163,3 +165,5 @@ class BoardApi(Resource):
             raise ItemNotExistsError
         except Exception:
             raise InternalServerError
+
+

@@ -7395,5 +7395,5 @@ creatures = ["Aboleth",
 
 def generateSlug():
     secure_random = random.SystemRandom()
-    name = secure_random.choice(adjectives) + '' + secure_random.choice(creatures) + '' + secure_random.choice(animals)
+    name = secure_random.choice(adjectives) + '' + secure_random.choice(adjectives) + '' + secure_random.choice(creatures) + '' + secure_random.choice(animals)
     return name

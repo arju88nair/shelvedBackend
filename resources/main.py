@@ -40,7 +40,7 @@ class ByBoardApi(Resource):
                             "$in": [user_id, "$liked_by"]
                         }
                     }
-                }, {"$sort": {"created_date": 1}})
+                }, {"$sort": {"created_at": 1}})
             converted = []
             for item in list(posts):
                 converted.append(item)
