@@ -94,7 +94,7 @@ errors = {
         "message": "User with given email address already exists",
         "status": 400
     },
-    "UserNameDoesnotExistsError": {
+    "UserNameDoesn'tExistsError": {
         "message": "User with given user name already exists",
         "status": 400
     },
@@ -102,7 +102,7 @@ errors = {
         "message": "Invalid username or password",
         "status": 401
     },
-    "UserDoesnotExistError": {
+    "UserDoesn'tExistError": {
         "message": "Couldn't find the user with given email address",
         "status": 400
     },
@@ -114,7 +114,7 @@ errors = {
         "message": "Token cannot be found",
         "status": 403
     },
-    "EntryDoesnotExistsError": {
+    "EntryDoesn'tExistsError": {
         "message": "Entry cannot be found",
         "status": 403
     },

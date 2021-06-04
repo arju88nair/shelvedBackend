@@ -29,7 +29,7 @@ class BoardsApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            now = datetime.datetime.now() + datetime.timedelta(seconds=60 * 3.4)
+            now = datetime.datetime.now()
             boards = Board.objects(added_by=ObjectId(user_id))
             boards_list = []
             for board in boards:

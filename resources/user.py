@@ -3,14 +3,15 @@ import json
 from flask import Response, request
 from flask import current_app as app
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, \
-    jwt_required, get_jwt
+    jwt_required, get_jwt, decode_token
 from flask_restful import Resource
-from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist
+from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError
 
-from database.model import User
+from database.model import User, RevokedTokenModel
 from resources.errors import (SchemaValidationError, EmailAlreadyExistsError, UnauthorizedError,
-                              InternalServerError, BadTokenError, UserDoesnotExistError, UserNameDoesnotExistsError)
-from util.helpers import add_token_to_database, revoke_token
+                              InternalServerError, BadTokenError, UserDoesnotExistError, UserNameDoesnotExistsError,
+                              TokenNotFound, ItemAlreadyExistsError)
+from util.helpers import _epoch_utc_to_datetime
 
 
 class SignupApi(Resource):
@@ -158,3 +159,61 @@ def tokenCreation(user, body, message, userId):
         {'id': str(userId), 'access_token': access_token, "refresh_token": refresh_token,
          'message': message, 'username': user.username, 'email': user.email})
     return Response(data, mimetype="application/json", status=200)
+
+
+def add_token_to_database(encoded_token, identity_claim):
+    """[    Adds a new token to the database. It is not revoked when it is added.
+        :param encoded_token:
+        :param identity_claim:]
+
+    Arguments:
+        encoded_token {[Token]}
+        identity_claim {[Tag]}
+
+    Raises:
+        SchemaValidationError
+        PostAlreadyExistsError
+        InternalServerErroridentity_claimidentity_claim
+        TokenNotFoundidentity_claim
+        InternalServerError
+    """
+
+    try:
+        body = {}
+        decoded_token = decode_token(encoded_token)
+        body["jti"] = decoded_token['jti']
+        body["token_type"] = decoded_token['type']
+        body["user_identity"] = decoded_token[identity_claim]
+        body["expires"] = _epoch_utc_to_datetime(decoded_token['exp'])
+        body["revoked"] = False
+        db_token = RevokedTokenModel(**body)
+        db_token.save()
+
+    except (FieldDoesNotExist, ValidationError):
+        raise SchemaValidationError
+    except NotUniqueError:
+        raise ItemAlreadyExistsError
+    except Exception as e:
+        raise InternalServerError
+
+
+def revoke_token(token_id, user):
+    """[    Revokes the given token. Raises a TokenNotFound error if the token does
+    not exist in the database]
+
+    Arguments:
+        token_id {[JTI]} -- [Token]
+        user {[Current user]} -- [User]
+
+    Raises:
+        TokenNotFound: [If Token is unavailable]
+    """
+    try:
+        token = RevokedTokenModel.objects(user_identity=user, jti=token_id).update(revoked=True)
+    except FieldDoesNotExist:
+        raise TokenNotFound
+    except Exception as e:
+        raise InternalServerError
+
+
+

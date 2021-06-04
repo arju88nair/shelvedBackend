@@ -4,14 +4,16 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from mongoengine.errors import FieldDoesNotExist, DoesNotExist
 from resources.errors import TokenNotFound, InternalServerError
 from util.slugGenerator import generateSlug
+from util.helpers import generateBoardColor
 
 
 class Board(db.Document):
     title = db.StringField(required=True)
     symbol = db.StringField()
-    description = db.StringField(default="")
+    description = db.StringField(default="A board to hold everything and anything related to you")
     is_admin = db.BooleanField(default=False)
     slug = db.StringField()
+    color = db.StringField()
     added_by = db.ReferenceField('User')
     created_at = db.DateTimeField()
     modified_at = db.DateTimeField(default=datetime.datetime.now)
@@ -21,6 +23,7 @@ class Board(db.Document):
             self.created_at = datetime.datetime.now()
         self.modified_at = datetime.datetime.now()
         self.slug = generateSlug()
+        self.color = generateBoardColor()
         return super(Board, self).save(*args, **kwargs)
 
 
