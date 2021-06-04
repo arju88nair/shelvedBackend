@@ -29,6 +29,7 @@ class BoardsApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
+            user = User.objects(id=ObjectId(user_id)).only('username')
             now = datetime.datetime.now()
             boards = Board.objects(added_by=ObjectId(user_id))
             boards_list = []
@@ -36,6 +37,7 @@ class BoardsApi(Resource):
                 board_dict = board.to_mongo().to_dict()
                 data = timeago.format(board.created_at, now)
                 board_dict['time_stamp'] = data
+                board_dict['username'] = user[0].username
                 boards_list.append(board_dict)
             res = {'data': boards_list, 'message': "Successfully retrieved", "count": len(boards_list)}
             boards_josn = dumps(res)
@@ -70,7 +72,8 @@ class BoardsApi(Resource):
             board = Board(**body, added_by=user)
             board.save()
             slug = board.slug
-            data = json.dumps({'id': str(slug), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
+            data = json.dumps(
+                {'id': str(slug), 'message': "Successfully inserted", 'board': json.loads(board.to_json())})
             return Response(data, mimetype="application/json", status=200)
         except (FieldDoesNotExist, ValidationError) as e:
             print(e)
@@ -165,5 +168,3 @@ class BoardApi(Resource):
             raise ItemNotExistsError
         except Exception:
             raise InternalServerError
-
-
