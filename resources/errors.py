@@ -87,14 +87,14 @@ errors = {
         "status": 403
     },
     "ItemNotExistsError": {
-        "message": "Item with given id doesn't exists",
+        "message": "Item with given id does not exists",
         "status": 400
     },
     "EmailAlreadyExistsError": {
         "message": "User with given email address already exists",
         "status": 400
     },
-    "UserNameDoesn'tExistsError": {
+    "UserNameDoesnotExistsError": {
         "message": "User with given user name already exists",
         "status": 400
     },
@@ -102,8 +102,8 @@ errors = {
         "message": "Invalid username or password",
         "status": 401
     },
-    "UserDoesn'tExistError": {
-        "message": "Couldn't find the user with given email address",
+    "UserDoesnotExistError": {
+        "message": "Couldn't find the user with the given email address",
         "status": 400
     },
     "BadTokenError": {
@@ -114,7 +114,7 @@ errors = {
         "message": "Token cannot be found",
         "status": 403
     },
-    "EntryDoesn'tExistsError": {
+    "EntryDoesnotExistsError": {
         "message": "Entry cannot be found",
         "status": 403
     },

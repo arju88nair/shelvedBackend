@@ -69,7 +69,8 @@ class LoginApi(Resource):
             return tokenCreation(user, body, "Successfully logged in", user.id)
         except UnauthorizedError:
             raise UnauthorizedError
-        except  DoesNotExist:
+        except  DoesNotExist as e:
+            print(e)
             raise UserDoesnotExistError
         except Exception as e:
             print(e)
