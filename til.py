@@ -39,7 +39,7 @@ app.config.from_pyfile('env.py')
 
 # app.config["JWT_COOKIE_SECURE"] = False
 # app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(hours=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(False) #Need to change in Prod
 
 app.config['JWT_SECRET_KEY'] = app.config.get("JWT_SECRET_KEY")
 app.config['MONGODB_SETTINGS'] = app.config.get("MONGODB_SETTINGS")

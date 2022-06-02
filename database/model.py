@@ -27,13 +27,13 @@ class Board(db.Document):
         return super(Board, self).save(*args, **kwargs)
 
 
-class Post(db.Document):
+class Item(db.Document):
     title = db.StringField()
     source = db.StringField(required=True)
     source_url = db.URLField(required=True)
     summary = db.StringField()
-    post_type = db.StringField()
-    text = db.StringField()
+    item_type = db.StringField()
+    content = db.StringField()
     slug = db.StringField()
     type = db.StringField()
     board = db.ReferenceField('Board', required=True)
@@ -49,7 +49,7 @@ class Post(db.Document):
         if not self.created_at:
             self.created_at = datetime.datetime.now()
         self.modified_at = datetime.datetime.now()
-        return super(Post, self).save(*args, **kwargs)
+        return super(Item, self).save(*args, **kwargs)
 
 
 class User(db.Document):
