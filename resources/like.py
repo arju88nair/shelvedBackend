@@ -1,5 +1,5 @@
 from flask import Response, request
-from database.model import Comment, Post
+from database.model import Comment, Item
 from flask_restful import Resource
 from mongoengine.errors import FieldDoesNotExist, ValidationError
 from resources.errors import ActionAlreadyDone, InternalServerError, SchemaValidationError
@@ -16,7 +16,7 @@ class LikeApi(Resource):
         """[Like API]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the post data]
+            SchemaValidationError: [If there are validation error in the item data]
             ActionAlreadyDone: [If the like already happened]
             InternalServerError: [Error in insertion]
         
@@ -34,7 +34,7 @@ class LikeApi(Resource):
         itemObj = ""
         try:
             if item is 'P':
-                itemObj = Post
+                itemObj = Item
             elif item is 'C':
                 itemObj = Comment
             user_id = get_jwt_identity()
@@ -60,7 +60,7 @@ class UnLikeApi(Resource):
         """[Like API]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the post data]
+            SchemaValidationError: [If there are validation error in the item data]
             ActionAlreadyDone: [If the like already happened]
             InternalServerError: [Error in insertion]
         
@@ -78,7 +78,7 @@ class UnLikeApi(Resource):
         itemObj = ""
         try:
             if item is 'P':
-                itemObj = Post
+                itemObj = Item
             elif item is 'C':
                 itemObj = Comment
             user_id = get_jwt_identity()

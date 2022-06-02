@@ -135,7 +135,7 @@ class BoardApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            board = Board.objects.get(id=id, added_by=user_id)
+            board = Board.objects(slug=id, added_by=user_id)
             board.delete()
             data = json.dumps({'message': "Successfully deleted"})
             return Response(data, mimetype="application/json", status=200)
@@ -153,14 +153,15 @@ class BoardApi(Resource):
             id {[Object ID]} -- [Mongo Object ID]
         
         Raises:
-            ItemNotExistsError: [Can't find the post item]
+            ItemNotExistsError: [Can't find the item item]
             InternalServerError: [Error in insertion]    
         
         Returns:
             [json] -- [Json object with message and status code]
         """
         try:
-            boards = Board.objects.get(id=id).to_json()
+            user_id = get_jwt_identity()
+            boards = Board.objects(slug=id,added_by=user_id).to_json()
             data = json.dumps(
                 {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))})
             return Response(data, mimetype="application/json", status=200)

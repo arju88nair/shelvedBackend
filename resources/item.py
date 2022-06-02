@@ -1,5 +1,5 @@
 from flask import Response, request
-from database.model import Post, User
+from database.model import Item, User
 from flask_restful import Resource
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 from resources.errors import SchemaValidationError, InternalServerError, DeletingItemError, ItemNotExistsError, \
@@ -14,13 +14,13 @@ from bson.json_util import dumps
 from bson import ObjectId
 
 
-class PostsApi(Resource):
-    """[Batch Post actions]
+class ItemsApi(Resource):
+    """[Batch Item actions]
     """
 
     @jwt_required()
     def get(self):
-        """[Retrieves all Posts]
+        """[Retrieves all Items]
         
         Raises:
             InternalServerError: [If Eror in retrieval]
@@ -29,9 +29,9 @@ class PostsApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
-            posts = Post.objects().to_json()
-            print(type(posts))
-            data = {'data': json.loads(posts), 'message': "Successfully retrieved", "count": len(json.loads(posts))}
+            items = Item.objects().to_json()
+            print(type(items))
+            data = {'data': json.loads(items), 'message': "Successfully retrieved", "count": len(json.loads(items))}
             data = json.dumps(data)
             response = Response(data, mimetype="application/json", status=200)
             return response
@@ -40,11 +40,11 @@ class PostsApi(Resource):
 
     @jwt_required()
     def post(self):
-        """[Batch Post API]
+        """[Batch Item API]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the post data]
-            ItemAlreadyExistsError: [If the post already exist]
+            SchemaValidationError: [If there are validation error in the item data]
+            ItemAlreadyExistsError: [If the item already exist]
             InternalServerError: [Error in insertion]
         
         Returns:
@@ -97,10 +97,10 @@ class PostsApi(Resource):
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
-            post = Post(**body, added_by=user)
-            post.save()
-            postId = post.id
-            data = json.dumps({'id': str(postId), 'message': "Successfully inserted"})
+            item = Item(**body, added_by=user)
+            item.save()
+            item_id = item.id
+            data = json.dumps({'id': str(item_id), 'message': "Successfully inserted"})
             return Response(data, mimetype="application/json", status=200)
         except (FieldDoesNotExist, ValidationError):
             raise SchemaValidationError
@@ -111,8 +111,8 @@ class PostsApi(Resource):
             raise InternalServerError
 
 
-class PostApi(Resource):
-    """[Individual Post actions]
+class ItemApi(Resource):
+    """[Individual Item actions]
     """
 
     @jwt_required()
@@ -123,7 +123,7 @@ class PostApi(Resource):
             id {[Object ID]} -- [Mongo Object ID]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the post data]
+            SchemaValidationError: [If there are validation error in the item data]
             UpdatingItemError: [Error in update]
             InternalServerError: [Error in insertion]
         
@@ -152,7 +152,7 @@ class PostApi(Resource):
         try:
             user_id = get_jwt_identity()
             body = request.get_json()
-            Post.objects.get(id=id, added_by=user_id).update(**body)
+            Item.objects.get(id=id, added_by=user_id).update(**body)
             data = json.dumps({'message': "Successfully updated"})
             return Response(data, mimetype="application/json", status=200)
         except InvalidQueryError:
@@ -164,7 +164,7 @@ class PostApi(Resource):
 
     @jwt_required()
     def delete(self, id):
-        """[Deleting single post]
+        """[Deleting single item]
         
         Arguments:
             id {[Object ID]} -- [Mongo Object ID]
@@ -178,8 +178,8 @@ class PostApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            post = Post.objects.get(id=id, added_by=user_id)
-            post.delete()
+            item = Item.objects.get(id=id, added_by=user_id)
+            item.delete()
             data = json.dumps({'message': "Successfully deleted"})
             return Response(data, mimetype="application/json", status=200)
         except DoesNotExist:
@@ -189,13 +189,13 @@ class PostApi(Resource):
 
     @jwt_required()
     def get(self, id):
-        """[Get single post item]
+        """[Get single item item]
         
         Arguments:
             id {[Object ID]} -- [Mongo Object ID]
         
         Raises:
-            ItemNotExistsError: [Can't find the post item]
+            ItemNotExistsError: [Can't find the item item]
             InternalServerError: [Error in insertion]    
         
         Returns:
@@ -203,7 +203,7 @@ class PostApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            posts = Post.objects.aggregate(
+            items = Item.objects.aggregate(
                 {"$match": {"_id": ObjectId(id)}},
                 {"$lookup": {
                     "from": "board",
@@ -219,13 +219,11 @@ class PostApi(Resource):
                         }
                     }
                 })
-            post = list(posts)
-            data = dumps({'data': post[0], 'message': "Successfully retrieved"})
+            item = list(items)
+            data = dumps({'data': item[0], 'message': "Successfully retrieved"})
             return Response(data, mimetype="application/json", status=200)
         except DoesNotExist:
             raise ItemNotExistsError
         except Exception as e:
             print(e)
             raise InternalServerError
-
-

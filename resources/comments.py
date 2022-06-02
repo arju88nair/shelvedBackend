@@ -53,16 +53,16 @@ class CommentsApi(Resource):
         payload = request.get_json()
 
         # source validations
-        if 'comment' not in payload and 'post_id' not in payload:
+        if 'comment' not in payload and 'item_id' not in payload:
             raise SchemaValidationError
 
         body = {}
         posted = datetime.utcnow()
-        post_id = payload['post_id']
+        item_id = payload['item_id']
         parent_slug = ""
         if 'slug_id' in payload:
             slug_id = payload['slug_id']
-            parent = Comment.objects.get(slug=slug_id, post_id=post_id)
+            parent = Comment.objects.get(slug=slug_id, item_id=item_id)
             # parent['full_slug']
             parent_slug = parent['slug']
 
@@ -79,7 +79,7 @@ class CommentsApi(Resource):
         user_id = get_jwt_identity()
         user = User.objects.get(id=user_id)
         body["added_by"] = user
-        body["post_id"] = payload['post_id']
+        body["item_id"] = payload['item_id']
         body["slug"] = slug
         body["full_slug"] = full_slug
         body["comment"] = payload['comment']
@@ -111,7 +111,7 @@ class CommentApi(Resource):
             id {[Object ID]} -- [Mongo Object ID]
         
         Raises:
-            SchemaValidationError: [If there are validation error in the post data]
+            SchemaValidationError: [If there are validation error in the item data]
             UpdatingItemError: [Error in update]
             InternalServerError: [Error in insertion]
         
@@ -174,7 +174,7 @@ class CommentApi(Resource):
         try:
             user_id = get_jwt_identity()
             comments = Comment.objects.aggregate(
-                {"$match": {"post_id": ObjectId(id)}},
+                {"$match": {"item_id": ObjectId(id)}},
                 {
                     "$addFields": {
                         "liked": {

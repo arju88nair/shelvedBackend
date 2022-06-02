@@ -1,9 +1,9 @@
-from resources.post import PostsApi, PostApi
+from resources.item import ItemsApi, ItemApi
 from resources.comments import CommentsApi, CommentApi
 from resources.like import LikeApi, UnLikeApi
 from resources.boards import BoardsApi, BoardApi
 from resources.user import SignupApi, LoginApi, TokenApi, LogoutApi, LogoutRefreshAPI
-from resources.main import ByBoardApi
+from resources.boardItems import ByBoardApi
 
 
 def initialize_routes(api):
@@ -13,8 +13,8 @@ def initialize_routes(api):
     api.add_resource(LogoutApi, '/api/auth/logout')
     api.add_resource(LogoutRefreshAPI, '/api/auth/revoke')
 
-    api.add_resource(PostsApi, '/api/posts')
-    api.add_resource(PostApi, '/api/post/<id>')
+    api.add_resource(ItemsApi, '/api/items')
+    api.add_resource(ItemApi, '/api/item/<id>')
 
     api.add_resource(BoardsApi, '/api/boards')
     api.add_resource(BoardApi, '/api/board/<id>')

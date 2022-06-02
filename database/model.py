@@ -33,7 +33,7 @@ class Item(db.Document):
     source_url = db.URLField(required=True)
     summary = db.StringField()
     item_type = db.StringField()
-    content = db.StringField()
+    text = db.StringField()
     slug = db.StringField()
     type = db.StringField()
     board = db.ReferenceField('Board', required=True)
@@ -59,7 +59,7 @@ class User(db.Document):
     imageURL = db.StringField()
     verified = db.BooleanField(default=False)
     is_active = db.BooleanField(default=True)
-    posts = db.ListField(db.ReferenceField('Post', reverse_delete_rule=db.PULL))
+    items = db.ListField(db.ReferenceField('Item', reverse_delete_rule=db.PULL))
     board = db.ListField(db.ReferenceField('Board', reverse_delete_rule=db.PULL))
     created_at = db.DateTimeField()
     modified_at = db.DateTimeField(default=datetime.datetime.now)
@@ -77,7 +77,7 @@ class User(db.Document):
         return check_password_hash(self.password, password)
 
 
-User.register_delete_rule(Post, 'added_by', db.CASCADE)
+User.register_delete_rule(Item, 'added_by', db.CASCADE)
 User.register_delete_rule(Board, 'added_by', db.PULL)
 
 
@@ -108,7 +108,7 @@ class RevokedTokenModel(db.Document):
 
 
 class Comment(db.Document):
-    post_id = db.ReferenceField('Post')
+    item_id = db.ReferenceField('Item')
     slug = db.StringField()
     full_slug = db.StringField()
     comment = db.StringField()

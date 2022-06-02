@@ -9,22 +9,21 @@ from database.model import Item
 from resources.errors import InternalServerError, ItemNotExistsError
 
 
-class BoardItems(Resource):
+class ByBoardApi(Resource):
     """[Batch Comment actions]
     """
 
     @jwt_required()
     def get(self, id):
         """[Retrieves all Items under a board]
-
+        
         Raises:
             InternalServerError: [If Error in retrieval]
-
+        
         Returns:
             [json] -- [Json object with message and status code]
         """
         try:
-
             user_id = get_jwt_identity()
             items = Item.objects.aggregate(
                 {"$lookup": {
