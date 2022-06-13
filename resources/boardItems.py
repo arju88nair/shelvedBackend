@@ -7,6 +7,7 @@ from mongoengine.errors import DoesNotExist
 
 from database.model import Item
 from resources.errors import InternalServerError, ItemNotExistsError
+import json
 
 
 class ByBoardApi(Resource):
@@ -26,20 +27,25 @@ class ByBoardApi(Resource):
         try:
             print(id)
             user_id = get_jwt_identity()
-            items = Item.objects.aggregate(
-                {"$match": {"_id": ObjectId(id)}},
-                {"$lookup": {
-                    "from": "board",
-                    "foreignField": "_id",
-                    "localField": "board",
-                    "as": "board",
-                }},
-               {"$sort": {"created_at": 1}})
-            converted = []
-            for item in list(items):
-                converted.append(item)
-            print(converted)
-            data = dumps({'data': list(converted), 'message': "Successfully retrieved"})
+            # posts = Item.objects.aggregate(
+            #     {"$lookup": {
+            #         "from": "board",
+            #         "foreignField": "_id",
+            #         "localField": "board",
+            #         "as": "board",
+            #     }},
+            #     {"$unwind": "$Board"},
+            #     {"$match": {"board._id": ObjectId(id)}},
+            #     {
+            #         "$addFields": {
+            #             "liked": {
+            #                 "$in": [user_id, "$liked_by"]
+            #             }
+            #         }
+            #     }, {"$sort": {"created_at": 1}})
+            items = Item.objects(board=id, added_by=user_id).to_json()
+            data = json.dumps(
+                {'data': json.loads(items), 'message': "Successfully retrieved", "count": len(json.loads(items))})
             return Response(data, mimetype="application/json", status=200)
         except  DoesNotExist:
             raise ItemNotExistsError
