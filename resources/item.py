@@ -1,5 +1,5 @@
 from flask import Response, request
-from database.model import Item, User
+from database.model import Item, User, Board
 from flask_restful import Resource
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 from resources.errors import SchemaValidationError, InternalServerError, DeletingItemError, ItemNotExistsError, \
@@ -53,27 +53,30 @@ class ItemsApi(Resource):
         body = request.get_json()
 
         # source validations
-        if 'source' not in body or 'source_url' not in body or 'board' not in body:
+        if 'board' not in body:
+            raise SchemaValidationError
+        # source validations
+        if 'item_type' not in body:
             raise SchemaValidationError
 
         source = body['source']
         source_url = body['source_url']
         board = body['board']
+        item_type = body['item_type']
 
         if source is None or source == '':
             raise SchemaValidationError
 
-        if source_url is None or source_url == '':
-            raise SchemaValidationError
+        # if source_url is None or source_url == '':
+        #     raise SchemaValidationError
 
         if board is None or board == '':
             raise SchemaValidationError
 
-        if validateURL(source_url) is False and source is not None:
+        if item_type.rstrip() == 'Post':
             summary = summarize(body['source'], 3)
             body['summary'] = summary
-            body['text'] = body['source']
-            body['type'] = "Text"
+            body['content'] = body['source']
             body['keywords'] = get_keywords(body['source'])
             body['tags'] = get_keywords(summary)
         else:
@@ -85,24 +88,27 @@ class ItemsApi(Resource):
             article.nlp()
 
             body['summary'] = article.summary
-            body['text'] = article.text
+            body['content'] = article.text
             body['keywords'] = article.keywords
             body['tags'] = article.keywords
-            body['type'] = "URL"
 
         body['source'] = source
         body['source_url'] = source_url
         body['slug'] = generateSlug()
-        data = json.dumps(body)
+
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
-            item = Item(**body, added_by=user)
+            newBoard = Board.objects.get(slug=board)
+            print(newBoard.id)
+            body['board'] = newBoard
+            item = Item(**body, added_by=user, )
             item.save()
             item_id = item.id
             data = json.dumps({'id': str(item_id), 'message': "Successfully inserted"})
             return Response(data, mimetype="application/json", status=200)
-        except (FieldDoesNotExist, ValidationError):
+        except (FieldDoesNotExist, ValidationError) as e:
+            print(e)
             raise SchemaValidationError
         except NotUniqueError:
             raise ItemAlreadyExistsError

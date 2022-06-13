@@ -25,4 +25,5 @@ def initialize_routes(api):
     api.add_resource(LikeApi, '/api/like')
     api.add_resource(UnLikeApi, '/api/unlike')
 
+    # Get items by board slug
     api.add_resource(ByBoardApi, '/api/by-board/<id>')

@@ -161,7 +161,7 @@ class BoardApi(Resource):
         """
         try:
             user_id = get_jwt_identity()
-            boards = Board.objects(slug=id,added_by=user_id).to_json()
+            boards = Board.objects(slug=id, added_by=user_id).to_json()
             data = json.dumps(
                 {'data': json.loads(boards), 'message': "Successfully retrieved", "count": len(json.loads(boards))})
             return Response(data, mimetype="application/json", status=200)

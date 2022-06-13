@@ -24,23 +24,17 @@ class ByBoardApi(Resource):
             [json] -- [Json object with message and status code]
         """
         try:
+            print(id)
             user_id = get_jwt_identity()
             items = Item.objects.aggregate(
+                {"$match": {"_id": ObjectId(id)}},
                 {"$lookup": {
                     "from": "board",
                     "foreignField": "_id",
                     "localField": "board",
                     "as": "board",
                 }},
-                {"$unwind": "$Board"},
-                {"$match": {"board._id": ObjectId(id)}},
-                {
-                    "$addFields": {
-                        "liked": {
-                            "$in": [user_id, "$liked_by"]
-                        }
-                    }
-                }, {"$sort": {"created_at": 1}})
+               {"$sort": {"created_at": 1}})
             converted = []
             for item in list(items):
                 converted.append(item)
