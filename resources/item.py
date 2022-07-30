@@ -23,7 +23,7 @@ class ItemsApi(Resource):
         """[Retrieves all Items]
         
         Raises:
-            InternalServerError: [If Eror in retrieval]
+            InternalServerError: [If Error in retrieval]
         
         Returns:
             [json] -- [Json object with message and status code]
