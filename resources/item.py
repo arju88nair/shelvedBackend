@@ -72,11 +72,10 @@ class ItemsApi(Resource):
 
         if board is None or board == '':
             raise SchemaValidationError
-
         if item_type.rstrip() == 'Post':
             summary = summarize(body['source'], 3)
-            body['summary'] = summary
-            body['content'] = body['source']
+            body['summary'] = body['summary']
+            body['content'] = body['summary']
             body['keywords'] = get_keywords(body['source'])
             body['tags'] = get_keywords(summary)
         else:
@@ -96,14 +95,13 @@ class ItemsApi(Resource):
         body['source'] = source
         body['source_url'] = source_url
         body['slug'] = generateSlug()
-
+        print(body)
         if 'title' not in body:
             raise SchemaValidationError
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
             newBoard = Board.objects.get(slug=board)
-            print(newBoard.id)
             body['board'] = newBoard
             item = Item(**body, added_by=user, )
             item.save()
