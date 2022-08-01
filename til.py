@@ -2,6 +2,7 @@ import datetime
 from flask import Flask
 from database.db import initialize_db
 import flask.scaffold
+
 flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from flask_restful import Api
 from resources.errors import errors
@@ -16,6 +17,7 @@ cors = CORS(app)
 # //TODO Fix security issues
 api = Api(app, errors=errors)
 
+
 # Using an `after_request` callback, we refresh any token that is within 30
 # minutes of expiring. Change the timedeltas to match the needs of your application.
 @app.after_request
@@ -23,7 +25,7 @@ def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.datetime.now(datetime.timezone.utc)
-        target_timestamp = datetime.datetime.timestamp(now + datetime.timedelta(minutes=30))
+        target_timestamp = datetime.datetime.timestamp(now + datetime.timedelta())
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
@@ -39,7 +41,7 @@ app.config.from_pyfile('env.py')
 
 # app.config["JWT_COOKIE_SECURE"] = False
 # app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(False) #Need to change in Prod
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(False)  # Need to change in Prod
 
 app.config['JWT_SECRET_KEY'] = app.config.get("JWT_SECRET_KEY")
 app.config['MONGODB_SETTINGS'] = app.config.get("MONGODB_SETTINGS")

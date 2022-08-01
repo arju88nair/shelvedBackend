@@ -89,6 +89,7 @@ class ItemsApi(Resource):
 
             body['summary'] = article.summary
             body['content'] = article.text
+            body['title'] = article.text
             body['keywords'] = article.keywords
             body['tags'] = article.keywords
 
@@ -96,6 +97,8 @@ class ItemsApi(Resource):
         body['source_url'] = source_url
         body['slug'] = generateSlug()
 
+        if 'title' not in body:
+            raise SchemaValidationError
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
