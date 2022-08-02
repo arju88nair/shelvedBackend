@@ -12,6 +12,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from util.summariser import summarize, get_keywords
 from bson.json_util import dumps
 from bson import ObjectId
+import nltk
+
+nltk.download('punkt')
 
 
 class ItemsApi(Resource):
@@ -69,7 +72,6 @@ class ItemsApi(Resource):
 
         # if source_url is None or source_url == '':
         #     raise SchemaValidationError
-
         if board is None or board == '':
             raise SchemaValidationError
         if item_type.rstrip() == 'Post':
@@ -91,7 +93,6 @@ class ItemsApi(Resource):
             body['title'] = article.text
             body['keywords'] = article.keywords
             body['tags'] = article.keywords
-
         body['source'] = source
         body['source_url'] = source_url
         body['slug'] = generateSlug()
